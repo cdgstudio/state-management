@@ -1,4 +1,4 @@
-import { ToDo } from "src/app/api/to-do";
+import { ToDo } from 'src/app/api/to-do';
 
 export interface ComponentState {
   loading: boolean;

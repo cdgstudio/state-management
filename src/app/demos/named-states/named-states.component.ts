@@ -8,11 +8,6 @@ import { LoadedState, getInitialState } from "src/app/demos/named-states/state.m
   standalone: true,
   imports: [NgFor, NgIf],
   template: `
-    @switch (stateSignal().state) { @case ('loading') {
-    <h1>Loading</h1>
-
-    } }
-
     <ng-container *ngIf="stateSignal() as state">
       <h1 *ngIf="state.state === 'loading'">Loading</h1>
 
