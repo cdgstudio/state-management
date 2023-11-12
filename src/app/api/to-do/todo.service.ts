@@ -1,10 +1,10 @@
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { Injectable, inject } from "@angular/core";
-import { delay, map, tap } from "rxjs";
-import { ToDo } from "./todo.models";
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { delay, map } from 'rxjs';
+import { ToDo } from './todo.models';
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 export class TodoService {
   private readonly http = inject(HttpClient);
@@ -13,15 +13,15 @@ export class TodoService {
     let params = new HttpParams();
 
     if (args.query) {
-      params = params.set("q", args.query);
+      params = params.set('q', args.query);
     }
 
-    if (typeof args.page === "number") {
-      params = params.set("_page", args.page);
+    if (typeof args.page === 'number') {
+      params = params.set('_page', args.page);
     }
 
-    if (typeof args.limit === "number") {
-      params = params.set("_limit", args.limit);
+    if (typeof args.limit === 'number') {
+      params = params.set('_limit', args.limit);
     }
 
     return this.http.get<ToDo[]>(`https://jsonplaceholder.typicode.com/todos/`, { params }).pipe(delay(1_500));
@@ -31,22 +31,22 @@ export class TodoService {
     let params = new HttpParams();
 
     if (args.query) {
-      params = params.set("q", args.query);
+      params = params.set('q', args.query);
     }
 
-    if (typeof args.page === "number") {
-      params = params.set("_page", args.page);
+    if (typeof args.page === 'number') {
+      params = params.set('_page', args.page);
     }
 
-    if (typeof args.limit === "number") {
-      params = params.set("_limit", args.limit);
+    if (typeof args.limit === 'number') {
+      params = params.set('_limit', args.limit);
     }
 
-    return this.http.get<ToDo[]>(`https://jsonplaceholder.typicode.com/todos/`, { params, observe: "response" }).pipe(
+    return this.http.get<ToDo[]>(`https://jsonplaceholder.typicode.com/todos/`, { params, observe: 'response' }).pipe(
       map((response) => ({
         items: response.body!,
-        totalItems: +response.headers.get("X-Total-Count")!,
-      }))
+        totalItems: +response.headers.get('X-Total-Count')!,
+      })),
     );
   }
 }

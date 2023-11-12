@@ -1,59 +1,62 @@
-import { NgFor, NgIf } from "@angular/common";
-import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal } from "@angular/core";
-import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
-import { TodoService } from "src/app/api/to-do";
-import { getInitialState } from "./state.models";
-import { ActivatedRoute, Router } from "@angular/router";
-import { Subscription } from "rxjs";
+import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { TodoService } from 'src/app/api/to-do';
+import { getInitialState } from './state.models';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
-  selector: "app-filterable-table",
+  selector: 'app-filterable-table',
   standalone: true,
-  imports: [NgFor, NgIf, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   template: `
-    <ng-container *ngIf="stateSignal() as state">
-      <h1 *ngIf="state.state === 'loading'">Loading</h1>
+    @if (stateSignal(); as state) { @if (state.state === 'loading') {
+    <h1>Loading</h1>
+    } @if (state.state === 'loaded') {
 
-      <ng-container *ngIf="state.state === 'loaded'">
-        <h1>Loaded</h1>
-        <button (click)="refresh()">Refresh</button>
-        <button (click)="error()">Make a error!</button>
+    <h1>Loaded</h1>
+    <button (click)="refresh()">Refresh</button>
+    <button (click)="error()">Make a error!</button>
 
-        <table>
-          <tr>
-            <th>Id</th>
-            <th>Title</th>
-          </tr>
-          <tr *ngFor="let item of state.data">
-            <td>{{ item.id }}</td>
-            <td>{{ item.title }}</td>
-          </tr>
-        </table>
-      </ng-container>
+    <table>
+      <tr>
+        <th>Id</th>
+        <th>Title</th>
+      </tr>
+      @for (item of state.data; track item) {
+      <tr>
+        <td>{{ item.id }}</td>
+        <td>{{ item.title }}</td>
+      </tr>
+      }
+    </table>
 
-      <ng-container *ngIf="state.state === 'refreshing'">
-        <h1>Refreshing</h1>
+    } @if (state.state === 'refreshing') {
 
-        <table>
-          <tr>
-            <th>Id</th>
-            <th>Title</th>
-          </tr>
-          <tr *ngFor="let item of state.data">
-            <td>{{ item.id }}</td>
-            <td>{{ item.title }}</td>
-          </tr>
-        </table>
-      </ng-container>
+    <h1>Refreshing</h1>
 
-      <ng-container *ngIf="state.state === 'error'">
-        <h1>Ups! I am a teapot</h1>
-        <p>Error: {{ state.error }}</p>
-        <button (click)="retry()">Retry</button>
-      </ng-container>
-    </ng-container>
+    <table>
+      <tr>
+        <th>Id</th>
+        <th>Title</th>
+      </tr>
+      @for (item of state.data; track item) {
+      <tr>
+        <td>{{ item.id }}</td>
+        <td>{{ item.title }}</td>
+      </tr>
+      }
+    </table>
+
+    } @if (state.state === 'error') {
+
+    <h1>Ups! I am a teapot</h1>
+    <p>Error: {{ state.error }}</p>
+    <button (click)="retry()">Retry</button>
+
+    } }
   `,
-  styleUrls: ["./filterable-table.component.scss"],
+  styleUrls: ['./filterable-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterableTableComponent implements OnInit {
@@ -63,13 +66,13 @@ export class FilterableTableComponent implements OnInit {
   stateSignal = signal(getInitialState());
 
   form = new FormGroup({
-    query: new FormControl("", { nonNullable: true }),
+    query: new FormControl('', { nonNullable: true }),
   });
 
   private disableFormEffect = effect(() => {
     const state = this.stateSignal();
 
-    if (state.state === "refreshing") {
+    if (state.state === 'refreshing') {
       this.form.controls.query.disable();
     } else {
       this.form.controls.query.enable();
@@ -79,7 +82,7 @@ export class FilterableTableComponent implements OnInit {
   private updateQueryParams = effect(() => {
     const state = this.stateSignal();
 
-    if (state.state !== "loaded") {
+    if (state.state !== 'loaded') {
       return;
     }
 
@@ -92,8 +95,8 @@ export class FilterableTableComponent implements OnInit {
 
   ngOnInit(): void {
     const map = this.activatedRoute.snapshot.queryParamMap;
-    const q = map.get("q") ?? undefined;
-    this.form.controls.query.setValue(q ?? "");
+    const q = map.get('q') ?? undefined;
+    this.form.controls.query.setValue(q ?? '');
 
     this.loadData({ query: q ?? undefined });
   }
@@ -101,12 +104,12 @@ export class FilterableTableComponent implements OnInit {
   refresh() {
     const state = this.stateSignal();
 
-    if (state.state !== "loaded") {
-      throw new Error("Wrong current state!");
+    if (state.state !== 'loaded') {
+      throw new Error('Wrong current state!');
     }
 
     this.stateSignal.set({
-      state: "refreshing",
+      state: 'refreshing',
       data: state.data,
     });
 
@@ -118,12 +121,12 @@ export class FilterableTableComponent implements OnInit {
   updateQuery() {
     const state = this.stateSignal();
 
-    if (state.state !== "loaded") {
-      throw new Error("Wrong current state!");
+    if (state.state !== 'loaded') {
+      throw new Error('Wrong current state!');
     }
 
     this.stateSignal.set({
-      state: "refreshing",
+      state: 'refreshing',
       data: state.data,
     });
 
@@ -135,14 +138,14 @@ export class FilterableTableComponent implements OnInit {
     // simulate error
     const state = this.stateSignal();
 
-    if (state.state !== "loaded") {
-      throw new Error("Wrong current state!");
+    if (state.state !== 'loaded') {
+      throw new Error('Wrong current state!');
     }
 
     setTimeout(() => {
       this.stateSignal.set({
-        state: "error",
-        error: "Unkown error!",
+        state: 'error',
+        error: 'Unkown error!',
       });
     }, 2_500);
   }
@@ -155,7 +158,7 @@ export class FilterableTableComponent implements OnInit {
   private loadData(args: { query?: string } = {}) {
     this.todoService.getToDos(args).subscribe((toDos) => {
       this.stateSignal.set({
-        state: "loaded",
+        state: 'loaded',
         data: toDos,
         query: args.query,
       });
