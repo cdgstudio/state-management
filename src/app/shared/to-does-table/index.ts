@@ -5,7 +5,7 @@ import { ToDo } from '../../api/to-do';
   selector: 'app-to-dos-table',
   template: `
     <table class="min-w-full text-left text-sm font-light">
-      <thead class="border-b font-medium dark:border-neutral-500">
+      <thead class="border-b font-medium ">
         <tr>
           <th scope="col" class="px-6 py-4">#</th>
           <th scope="col" class="px-6 py-4">Title</th>
@@ -14,9 +14,7 @@ import { ToDo } from '../../api/to-do';
       </thead>
       <tbody>
         @for (item of toDos; track item.id) {
-        <tr
-          class="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600"
-        >
+        <tr class="border-b transition duration-300 ease-in-out hover:bg-neutral-100 ">
           <td class="whitespace-nowrap px-6 py-4 font-medium">{{ item.id }}</td>
           <td class="whitespace-nowrap px-6 py-4">{{ item.title }}</td>
           <td class="whitespace-nowrap px-6 py-4">{{ item.completed }}</td>

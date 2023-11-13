@@ -16,7 +16,6 @@ import { ErrorComponent } from '../../shared/error';
     } @else if (state.error) {
     <app-error [errorDetails]="state.errorData" (tryAgain)="retry()" />
     } @else if(state.data) {
-
     <div class="flex gap-2">
       <button (click)="refresh()" [disabled]="state.refreshing">Refresh</button>
       <button (click)="error()" [disabled]="state.refreshing">Make a error!</button>
