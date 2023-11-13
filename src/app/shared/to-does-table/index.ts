@@ -19,6 +19,10 @@ import { ToDo } from '../../api/to-do';
           <td class="whitespace-nowrap px-6 py-4">{{ item.title }}</td>
           <td class="whitespace-nowrap px-6 py-4">{{ item.completed }}</td>
         </tr>
+        } @empty {
+        <tr class="border-b transition duration-300 ease-in-out hover:bg-neutral-100">
+          <td class="whitespace-nowrap px-6 font-medium py-10 text-center" colspan="3">NO ITEMS</td>
+        </tr>
         }
       </tbody>
     </table>

@@ -24,10 +24,21 @@ import { ToDosTableComponent } from '../../shared/to-does-table';
     }
     <!--  -->
     @if(state.state === 'loaded' || state.state === 'refreshing') {
+
     <div class="flex gap-2">
       <button (click)="refresh()" [disabled]="state.state === 'refreshing'">Refresh</button>
       <button (click)="error()" [disabled]="state.state === 'refreshing'">Make a error!</button>
     </div>
+
+    <form [formGroup]="form" class="mb-5 mt-5" (ngSubmit)="updateQuery()">
+      <input
+        type="text"
+        formControlName="query"
+        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+        placeholder="Query"
+        [readOnly]="state.state === 'refreshing'"
+      />
+    </form>
 
     <div class="relative">
       <app-to-dos-table [toDos]="state.data" [class.opacity-50]="state.state === 'refreshing'" />
@@ -51,16 +62,6 @@ export class FilterableTableComponent implements OnInit {
 
   form = new FormGroup({
     query: new FormControl('', { nonNullable: true }),
-  });
-
-  private disableFormEffect = effect(() => {
-    const state = this.stateSignal();
-
-    if (state.state === 'refreshing') {
-      this.form.controls.query.disable();
-    } else {
-      this.form.controls.query.enable();
-    }
   });
 
   private updateQueryParams = effect(() => {
@@ -125,6 +126,11 @@ export class FilterableTableComponent implements OnInit {
     if (state.state !== 'loaded') {
       throw new Error('Wrong current state!');
     }
+
+    this.stateSignal.set({
+      state: 'refreshing',
+      data: state.data,
+    });
 
     setTimeout(() => {
       this.stateSignal.set({

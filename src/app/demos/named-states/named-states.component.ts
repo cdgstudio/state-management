@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { TodoService } from 'src/app/api/to-do';
-import { getInitialState } from 'src/app/demos/named-states/state.models';
+import { LoadedState, getInitialState } from './state.models';
 import { SpinnerComponent } from '../../shared/spinner';
 import { ErrorComponent } from '../../shared/error';
 import { ToDosTableComponent } from '../../shared/to-does-table';
@@ -51,7 +51,6 @@ export class NamedStatesComponent implements OnInit {
 
   refresh() {
     const state = this.stateSignal();
-    // const state = this.stateSignal() as LoadedState;
 
     if (state.state !== 'loaded') {
       throw new Error('Wrong current state!');
