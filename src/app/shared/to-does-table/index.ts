@@ -34,5 +34,5 @@ import { ToDo } from '../../api/to-do';
   standalone: true,
 })
 export class ToDosTableComponent {
-  @Input({ required: true }) toDos!: ToDo[];
+  @Input({ required: true }) toDos!: ToDo[] | null | undefined;
 }
