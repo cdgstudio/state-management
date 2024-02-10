@@ -1,54 +1,57 @@
-import { NgFor, NgIf } from "@angular/common";
-import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal } from "@angular/core";
-import { TodoService } from "src/app/api/to-do";
-import { LoadedState, getInitialState } from "src/app/demos/named-states/state.models";
+import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal } from '@angular/core';
+import { TodoService } from 'src/app/api/to-do';
+import { getInitialState } from 'src/app/demos/named-states/state.models';
 
 @Component({
-  selector: "app-named-states",
+  selector: 'app-named-states',
   standalone: true,
-  imports: [NgFor, NgIf],
+  imports: [],
   template: `
-    <ng-container *ngIf="stateSignal() as state">
-      <h1 *ngIf="state.state === 'loading'">Loading</h1>
+    @if (stateSignal(); as state) { @if (state.state === 'loading') {
+    <h1>Loading</h1>
+    } @if (state.state === 'loaded') {
 
-      <ng-container *ngIf="state.state === 'loaded'">
-        <h1>Loaded</h1>
-        <button (click)="refresh()">Refresh</button>
-        <button (click)="error()">Make a error!</button>
-        <table>
-          <tr>
-            <th>Id</th>
-            <th>Title</th>
-          </tr>
-          <tr *ngFor="let item of state.data">
-            <td>{{ item.id }}</td>
-            <td>{{ item.title }}</td>
-          </tr>
-        </table>
-      </ng-container>
+    <h1>Loaded</h1>
+    <button (click)="refresh()">Refresh</button>
+    <button (click)="error()">Make a error!</button>
+    <table>
+      <tr>
+        <th>Id</th>
+        <th>Title</th>
+      </tr>
+      @for (item of state.data; track item) {
+      <tr>
+        <td>{{ item.id }}</td>
+        <td>{{ item.title }}</td>
+      </tr>
+      }
+    </table>
 
-      <ng-container *ngIf="state.state === 'refreshing'">
-        <h1>Refreshing</h1>
-        <table>
-          <tr>
-            <th>Id</th>
-            <th>Title</th>
-          </tr>
-          <tr *ngFor="let item of state.data">
-            <td>{{ item.id }}</td>
-            <td>{{ item.title }}</td>
-          </tr>
-        </table>
-      </ng-container>
+    } @if (state.state === 'refreshing') {
 
-      <ng-container *ngIf="state.state === 'error'">
-        <h1>Ups! I am a teapot</h1>
-        <p>Error: {{ state.error }}</p>
-        <button (click)="retry()">Retry</button>
-      </ng-container>
-    </ng-container>
+    <h1>Refreshing</h1>
+    <table>
+      <tr>
+        <th>Id</th>
+        <th>Title</th>
+      </tr>
+      @for (item of state.data; track item) {
+      <tr>
+        <td>{{ item.id }}</td>
+        <td>{{ item.title }}</td>
+      </tr>
+      }
+    </table>
+
+    } @if (state.state === 'error') {
+
+    <h1>Ups! I am a teapot</h1>
+    <p>Error: {{ state.error }}</p>
+    <button (click)="retry()">Retry</button>
+
+    } }
   `,
-  styleUrls: ["./named-states.component.scss"],
+  styleUrls: ['./named-states.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NamedStatesComponent implements OnInit {
@@ -63,12 +66,12 @@ export class NamedStatesComponent implements OnInit {
     const state = this.stateSignal();
     // const state = this.stateSignal() as LoadedState;
 
-    if (state.state !== "loaded") {
-      throw new Error("Wrong current state!");
+    if (state.state !== 'loaded') {
+      throw new Error('Wrong current state!');
     }
 
     this.stateSignal.set({
-      state: "refreshing",
+      state: 'refreshing',
       data: state.data,
     });
 
@@ -79,19 +82,19 @@ export class NamedStatesComponent implements OnInit {
     // simulate error
     const state = this.stateSignal();
 
-    if (state.state !== "loaded") {
-      throw new Error("Wrong current state!");
+    if (state.state !== 'loaded') {
+      throw new Error('Wrong current state!');
     }
 
     this.stateSignal.set({
-      state: "refreshing",
+      state: 'refreshing',
       data: state.data,
     });
 
     setTimeout(() => {
       this.stateSignal.set({
-        state: "error",
-        error: "Unkown error!",
+        state: 'error',
+        error: 'Unkown error!',
       });
     }, 2_500);
   }
@@ -104,7 +107,7 @@ export class NamedStatesComponent implements OnInit {
   private loadData() {
     this.todoService.getToDos().subscribe((toDos) => {
       this.stateSignal.set({
-        state: "loaded",
+        state: 'loaded',
         data: toDos,
       });
     });
