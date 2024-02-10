@@ -83,7 +83,9 @@ export class FilterableTableComponent implements OnInit {
     const q = map.get('q') ?? undefined;
     this.form.controls.query.setValue(q ?? '');
 
-    this.loadData({ query: q ?? undefined });
+    this.loadData({
+      query: this.form.controls.query.value,
+    });
   }
 
   refresh() {

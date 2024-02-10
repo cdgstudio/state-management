@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, Signal, effect, inject, signal } from '@angular/core';
 import { TodoService } from 'src/app/api/to-do';
-import { getInitialState } from './state.models';
+import { ComponentState, getInitialState } from './state.models';
 import { ToDosTableComponent } from '../../shared/to-does-table';
 import { SpinnerComponent } from '../../shared/spinner';
 import { ErrorComponent } from '../../shared/error';
@@ -13,9 +13,13 @@ import { ErrorComponent } from '../../shared/error';
     <!--  -->
     @if( state.loading ){
     <app-spinner />
-    } @else if (state.error) {
+    }
+    <!--  -->
+    @if (state.error) {
     <app-error [errorDetails]="state.errorData" (tryAgain)="retry()" />
-    } @else if(state.data) {
+    }
+    <!--  -->
+    @if(state.data) {
     <div class="flex gap-2">
       <button (click)="refresh()" [disabled]="state.refreshing">Refresh</button>
       <button (click)="error()" [disabled]="state.refreshing">Make a error!</button>
@@ -37,12 +41,25 @@ export class SingleStateComponent implements OnInit {
   private readonly todoService = inject(TodoService);
   stateSignal = signal(getInitialState());
 
+  private lastState = this.stateSignal();
+  private logRefreshTime = effect(() => {
+    const state = this.stateSignal();
+
+    if (state.refreshing === true) {
+      console.time('Refreshing');
+    } else if (this.lastState.refreshing === true) {
+      console.timeEnd('Refreshing');
+    }
+
+    this.lastState = state;
+  });
+
   private countErrors = effect(() => {
     const state = this.stateSignal();
 
     if (state.error === true) {
       // const type = state.errorData.type;
-      //            ^ -> 'state.errorData' is possibly 'null'.ts(18047)
+      //            ^? -> 'state.errorData' is possibly 'null'.ts(18047)
     }
   });
 
@@ -61,7 +78,9 @@ export class SingleStateComponent implements OnInit {
       data: state.data,
     });
 
-    this.loadData();
+    setTimeout(() => {
+      this.loadData();
+    }, 2_500);
   }
 
   error() {
@@ -79,8 +98,8 @@ export class SingleStateComponent implements OnInit {
     setTimeout(() => {
       this.stateSignal.set({
         error: true,
-        errorData: { type: '504' },
-        loading: false,
+        errorData: null,
+        loading: true,
         refreshing: false,
         data: null,
       });
@@ -93,14 +112,25 @@ export class SingleStateComponent implements OnInit {
   }
 
   private loadData() {
-    this.todoService.getToDos({ limit: 5 }).subscribe((toDos) => {
-      this.stateSignal.set({
-        loading: false,
-        error: false,
-        errorData: null,
-        refreshing: false,
-        data: toDos,
-      });
+    this.todoService.getToDos({ limit: 5 }).subscribe({
+      next: (toDos) => {
+        this.stateSignal.set({
+          loading: false,
+          error: false,
+          errorData: null,
+          refreshing: false,
+          data: toDos,
+        });
+      },
+      error: (error) => {
+        this.stateSignal.set({
+          loading: false,
+          error: true,
+          errorData: error,
+          refreshing: false,
+          data: null,
+        });
+      },
     });
   }
 }

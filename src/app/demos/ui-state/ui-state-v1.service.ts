@@ -1,66 +1,50 @@
-import { Injectable, inject } from "@angular/core";
-import { BehaviorSubject, map } from "rxjs";
-import { ToDo, TodoService } from "src/app/api/to-do";
-
-interface State {
-  pageSize: number;
-  pageNumber: number;
-  totalItems: number;
-  items: ToDo[];
-}
+import { Injectable, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { BehaviorSubject } from 'rxjs';
+import { TodoService } from 'src/app/api/to-do';
+import { ComponentState, LoadedState, getInitialState } from './state.models';
 
 @Injectable()
 export class UiStateV1Service {
   private readonly todoService = inject(TodoService);
-  private state$$ = new BehaviorSubject<State>({
-    pageSize: 10,
-    pageNumber: 0,
-    totalItems: 0,
-    items: [],
-  });
+  private state$$ = new BehaviorSubject<ComponentState>(getInitialState());
 
-  state$ = this.state$$.asObservable();
-  items$ = this.state$.pipe(map((state) => state.items));
-  totalItems$ = this.state$.pipe(map((state) => state.totalItems));
+  state = toSignal(this.state$$, { initialValue: this.state$$.getValue() });
 
-  loadItems() {
-    this.refresh();
-  }
+  newSearch(request: LoadedState['request']) {
+    const state = this.state$$.getValue();
 
-  nextPage() {
-    const state = this.state$$.value;
-    this.state$$.next({
-      ...state,
-      pageNumber: state.pageNumber + 1,
-    });
+    if (state.state === 'loaded') {
+      this.state$$.next({
+        state: 'refreshing',
+        data: state.data,
+        request,
+        totalItems: state.totalItems,
+      });
+    }
 
-    this.refresh();
-  }
+    if (state.state === 'error') {
+      this.state$$.next({
+        state: 'loading',
+      });
+    }
 
-  previewPage() {
-    const state = this.state$$.value;
-    this.state$$.next({
-      ...state,
-      pageNumber: state.pageNumber - 1,
-    });
-
-    this.refresh();
-  }
-
-  private refresh() {
-    const state = this.state$$.value;
-
-    this.todoService
-      .getToDosMeta({
-        page: state.pageNumber,
-        limit: state.pageSize,
-      })
-      .subscribe((response) => {
+    this.todoService.getToDosMeta(request).subscribe({
+      next: (response) => {
         this.state$$.next({
-          ...state,
-          items: response.items,
+          state: 'loaded',
+          data: response.items,
+          request: request,
           totalItems: response.totalItems,
         });
-      });
+      },
+      error: (error) => {
+        this.state$$.next({
+          state: 'error',
+          error: error,
+          fromState: state,
+        });
+      },
+    });
   }
 }

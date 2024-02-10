@@ -95,11 +95,19 @@ export class NamedStatesComponent implements OnInit {
       .getToDos({
         limit: 5,
       })
-      .subscribe((toDos) => {
-        this.stateSignal.set({
-          state: 'loaded',
-          data: toDos,
-        });
+      .subscribe({
+        next: (toDos) => {
+          this.stateSignal.set({
+            state: 'loaded',
+            data: toDos,
+          });
+        },
+        error: (error) => {
+          this.stateSignal.set({
+            state: 'error',
+            error: error,
+          });
+        },
       });
   }
 }

@@ -43,6 +43,7 @@ export class TodoService {
     }
 
     return this.http.get<ToDo[]>(`https://jsonplaceholder.typicode.com/todos/`, { params, observe: 'response' }).pipe(
+      delay(2_500),
       map((response) => ({
         items: response.body!,
         totalItems: +response.headers.get('X-Total-Count')!,
