@@ -1,22 +1,22 @@
-import { ToDo } from "../../api/to-do";
+import { ToDo } from '../../api/to-do';
 
 export interface LoadingState {
-  state: "loading";
+  state: 'loading';
 }
 
 export interface LoadedState {
-  state: "loaded";
+  state: 'loaded';
   data: ToDo[];
   query: string | undefined;
 }
 
 export interface RefreshingState {
-  state: "refreshing";
+  state: 'refreshing';
   data: ToDo[];
 }
 
 export interface ErrorState {
-  state: "error";
+  state: 'error';
   error: unknown;
 }
 
@@ -24,6 +24,6 @@ export type ComponentState = LoadingState | LoadedState | RefreshingState | Erro
 
 export function getInitialState(): ComponentState {
   return {
-    state: "loading",
+    state: 'loading',
   };
 }
