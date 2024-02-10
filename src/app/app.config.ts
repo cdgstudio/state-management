@@ -12,6 +12,10 @@ export const appConfig: ApplicationConfig = {
         loadComponent: () => import('./demos/main'),
       },
       {
+        path: 'two-states',
+        loadComponent: () => import('./demos/two-states'),
+      },
+      {
         path: 'named-states',
         loadComponent: () => import('./demos/named-states'),
       },
