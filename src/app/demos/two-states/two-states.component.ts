@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { TodoService, ToDo } from '../../api/to-do';
 import { SpinnerComponent } from '../../shared/spinner';
 import { ToDosTableComponent } from '../../shared/to-does-table';
@@ -10,7 +10,7 @@ import { ToDosTableComponent } from '../../shared/to-does-table';
   imports: [ToDosTableComponent, SpinnerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TwoStatesComponent {
+export class TwoStatesComponent implements OnInit {
   private toDos$ = inject(TodoService).getToDos({ limit: 3 });
 
   loading = signal(true);
