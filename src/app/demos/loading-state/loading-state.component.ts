@@ -4,13 +4,13 @@ import { SpinnerComponent } from '../../shared/spinner';
 import { ToDosTableComponent } from '../../shared/to-does-table';
 
 @Component({
-  selector: 'app-root',
+  selector: 'app-loading-state',
   standalone: true,
-  templateUrl: `./two-states.component.html`,
+  templateUrl: `./loading-state.component.html`,
   imports: [ToDosTableComponent, SpinnerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TwoStatesComponent implements OnInit {
+export class LoadingStateComponent implements OnInit {
   private toDos$ = inject(TodoService).getToDos({ limit: 3 });
 
   loading = signal(true);

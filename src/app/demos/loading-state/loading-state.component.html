@@ -1,9 +1,9 @@
 @if (loading()) {
-  <h2 class="text-xl text-center my-4">Loading view</h2>
+  <h2 class="text-xl text-center my-4 text-white">Loading view</h2>
 
   <app-spinner />
 } @else {
-  <h2 class="text-xl text-center my-4">Data view</h2>
+  <h2 class="text-xl text-center my-4 text-white">Data view</h2>
 
   <app-to-dos-table [toDos]="toDos()" />
 
