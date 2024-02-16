@@ -12,42 +12,41 @@ import { ToDosTableComponent } from '../../shared/to-does-table';
   standalone: true,
   template: `
     @if (stateSignal(); as state) {
-    <p class="my-4">The current state is: {{ state.state }}</p>
+      <p class="my-4">The current state is: {{ state.state }}</p>
 
-    <!--  -->
-    @if(state.state === 'loading') {
-    <app-spinner />
-    }
-    <!--  -->
-    @if(state.state === 'error') {
-    <app-error [errorDetails]="state.error" (tryAgain)="retry()" />
-    }
-    <!--  -->
-    @if(state.state === 'loaded' || state.state === 'refreshing') {
-
-    <div class="flex gap-2">
-      <button (click)="refresh()" [disabled]="state.state === 'refreshing'">Refresh</button>
-      <button (click)="error()" [disabled]="state.state === 'refreshing'">Make a error!</button>
-    </div>
-
-    <form [formGroup]="form" class="mb-5 mt-5" (ngSubmit)="updateQuery()">
-      <input
-        type="text"
-        formControlName="query"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-        placeholder="Query"
-        [readOnly]="state.state === 'refreshing'"
-      />
-    </form>
-
-    <div class="relative">
-      <app-to-dos-table [toDos]="state.data" [class.opacity-50]="state.state === 'refreshing'" />
-      @if (state.state === 'refreshing') {
-      <app-spinner class="absolute inset-0" />
+      <!--  -->
+      @if (state.state === 'LOADING') {
+        <app-spinner />
       }
-    </div>
-    }
-    <!--  -->
+      <!--  -->
+      @if (state.state === 'ERROR') {
+        <app-error [errorDetails]="state.error" (tryAgain)="retry()" />
+      }
+      <!--  -->
+      @if (state.state === 'LOADED' || state.state === 'REFRESHING') {
+        <div class="flex gap-2">
+          <button (click)="refresh()" [disabled]="state.state === 'REFRESHING'">Refresh</button>
+          <button (click)="error()" [disabled]="state.state === 'REFRESHING'">Make a error!</button>
+        </div>
+
+        <form [formGroup]="form" class="mb-5 mt-5" (ngSubmit)="updateQuery()">
+          <input
+            type="text"
+            formControlName="query"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+            placeholder="Query"
+            [readOnly]="state.state === 'REFRESHING'"
+          />
+        </form>
+
+        <div class="relative">
+          <app-to-dos-table [toDos]="state.data" [class.opacity-50]="state.state === 'REFRESHING'" />
+          @if (state.state === 'REFRESHING') {
+            <app-spinner class="absolute inset-0" />
+          }
+        </div>
+      }
+      <!--  -->
     }
   `,
   styleUrls: ['./filterable-table.component.scss'],
@@ -67,7 +66,7 @@ export class FilterableTableComponent implements OnInit {
   private updateQueryParams = effect(() => {
     const state = this.stateSignal();
 
-    if (state.state !== 'loaded') {
+    if (state.state !== 'LOADED') {
       return;
     }
 
@@ -91,12 +90,12 @@ export class FilterableTableComponent implements OnInit {
   refresh() {
     const state = this.stateSignal();
 
-    if (state.state !== 'loaded') {
+    if (state.state !== 'LOADED') {
       throw new Error('Wrong current state!');
     }
 
     this.stateSignal.set({
-      state: 'refreshing',
+      state: 'REFRESHING',
       data: state.data,
     });
 
@@ -108,12 +107,12 @@ export class FilterableTableComponent implements OnInit {
   updateQuery() {
     const state = this.stateSignal();
 
-    if (state.state !== 'loaded') {
+    if (state.state !== 'LOADED') {
       throw new Error('Wrong current state!');
     }
 
     this.stateSignal.set({
-      state: 'refreshing',
+      state: 'REFRESHING',
       data: state.data,
     });
 
@@ -125,18 +124,18 @@ export class FilterableTableComponent implements OnInit {
     // simulate error
     const state = this.stateSignal();
 
-    if (state.state !== 'loaded') {
+    if (state.state !== 'LOADED') {
       throw new Error('Wrong current state!');
     }
 
     this.stateSignal.set({
-      state: 'refreshing',
+      state: 'REFRESHING',
       data: state.data,
     });
 
     setTimeout(() => {
       this.stateSignal.set({
-        state: 'error',
+        state: 'ERROR',
         error: 'Unkown error!',
       });
     }, 2_500);
@@ -155,7 +154,7 @@ export class FilterableTableComponent implements OnInit {
       })
       .subscribe((toDos) => {
         this.stateSignal.set({
-          state: 'loaded',
+          state: 'LOADED',
           data: toDos,
           query: args.query,
         });

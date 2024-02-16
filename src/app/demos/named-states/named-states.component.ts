@@ -1,113 +1,81 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { TodoService } from 'src/app/api/to-do';
-import { LoadedState, getInitialState } from './state.models';
-import { SpinnerComponent } from '../../shared/spinner';
 import { ErrorComponent } from '../../shared/error';
+import { SpinnerComponent } from '../../shared/spinner';
 import { ToDosTableComponent } from '../../shared/to-does-table';
+import { getInitialState } from './state.models';
 
 @Component({
   selector: 'app-named-states',
   standalone: true,
-  template: `
-    @if (stateSignal(); as state) {
-    <p class="my-4">The current state is: {{ state.state }}</p>
-
-    <!--  -->
-    @if(state.state === 'loading') {
-    <app-spinner />
-    }
-    <!--  -->
-    @if(state.state === 'error') {
-    <app-error [errorDetails]="state.error" (tryAgain)="retry()" />
-    }
-    <!--  -->
-    @if(state.state === 'loaded' || state.state === 'refreshing') {
-    <div class="flex gap-2">
-      <button (click)="refresh()" [disabled]="state.state === 'refreshing'">Refresh</button>
-      <button (click)="error()" [disabled]="state.state === 'refreshing'">Make a error!</button>
-    </div>
-
-    <div class="relative">
-      <app-to-dos-table [toDos]="state.data" [class.opacity-50]="state.state === 'refreshing'" />
-      @if (state.state === 'refreshing') {
-      <app-spinner class="absolute inset-0" />
-      }
-    </div>
-    }
-    <!--  -->
-    }
-  `,
+  templateUrl: './named-states.component.html',
   styleUrls: ['./named-states.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [SpinnerComponent, ErrorComponent, ToDosTableComponent],
 })
-export class NamedStatesComponent implements OnInit {
-  private readonly todoService = inject(TodoService);
-  stateSignal = signal(getInitialState());
+export class NamedStatesComponent {
+  private readonly toDos$ = inject(TodoService).getToDos({ limit: 3 });
+  state = signal(getInitialState());
 
-  ngOnInit(): void {
+  constructor() {
     this.loadData();
   }
 
   refresh() {
-    const state = this.stateSignal();
+    const state = this.state();
 
-    if (state.state !== 'loaded') {
+    if (state.state !== 'LOADED') {
       throw new Error('Wrong current state!');
     }
 
-    this.stateSignal.set({
-      state: 'refreshing',
+    this.state.set({
+      state: 'REFRESHING',
       data: state.data,
     });
 
     this.loadData();
   }
 
-  error() {
+  makeError() {
     // simulate error
-    const state = this.stateSignal();
+    const state = this.state();
 
-    if (state.state !== 'loaded') {
+    if (state.state !== 'LOADED') {
       throw new Error('Wrong current state!');
     }
 
-    this.stateSignal.set({
-      state: 'refreshing',
+    this.state.set({
+      state: 'REFRESHING',
       data: state.data,
     });
 
     setTimeout(() => {
-      this.stateSignal.set({
-        state: 'error',
+      this.state.set({
+        state: 'ERROR',
         error: 'Unkown error!',
       });
     }, 2_500);
   }
 
-  retry() {
-    this.stateSignal.set(getInitialState());
+  reload() {
+    this.state.set(getInitialState());
     this.loadData();
   }
 
   private loadData() {
-    this.todoService
-      .getToDos({
-        limit: 5,
-      })
-      .subscribe({
-        next: (toDos) => {
-          this.stateSignal.set({
-            state: 'loaded',
-            data: toDos,
-          });
-        },
-        error: (error) => {
-          this.stateSignal.set({
-            state: 'error',
-            error: error,
-          });
-        },
-      });
+    this.toDos$.subscribe({
+      next: (toDos) => {
+        this.state.set({
+          state: 'LOADED',
+          data: toDos,
+        });
+      },
+      error: (error) => {
+        this.state.set({
+          state: 'ERROR',
+          error: error,
+        });
+      },
+    });
   }
 }

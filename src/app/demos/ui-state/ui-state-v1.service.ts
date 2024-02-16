@@ -14,25 +14,25 @@ export class UiStateV1Service {
   newSearch(request: LoadedState['request']) {
     const state = this.state$$.getValue();
 
-    if (state.state === 'loaded') {
+    if (state.state === 'LOADED') {
       this.state$$.next({
-        state: 'refreshing',
+        state: 'REFRESHING',
         data: state.data,
         request,
         totalItems: state.totalItems,
       });
     }
 
-    if (state.state === 'error') {
+    if (state.state === 'ERROR') {
       this.state$$.next({
-        state: 'loading',
+        state: 'LOADING',
       });
     }
 
     this.todoService.getToDosMeta(request).subscribe({
       next: (response) => {
         this.state$$.next({
-          state: 'loaded',
+          state: 'LOADED',
           data: response.items,
           request: request,
           totalItems: response.totalItems,
@@ -40,7 +40,7 @@ export class UiStateV1Service {
       },
       error: (error) => {
         this.state$$.next({
-          state: 'error',
+          state: 'ERROR',
           error: error,
           fromState: state,
         });

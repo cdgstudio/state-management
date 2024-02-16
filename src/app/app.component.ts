@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, isDevMode } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { routes } from './app.config';
 
 @Component({
   selector: 'app-root',
@@ -11,31 +12,10 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 })
 export class AppComponent {
   devMode = isDevMode();
-  items = [
-    {
-      link: 'loading-state',
-      text: 'Loading state',
-    },
-    {
-      link: 'more-states',
-      text: 'More states',
-    },
-    // ---
-    {
-      link: 'single-state',
-      text: 'Single state',
-    },
-    {
-      link: 'named-states',
-      text: 'Named states',
-    },
-    {
-      link: 'filterable-table',
-      text: 'With filter',
-    },
-    {
-      link: 'ui-state',
-      text: 'UI State',
-    },
-  ];
+  items = routes
+    .filter((route) => route.path)
+    .map((route) => ({
+      path: route.path!,
+      label: route.path!.replace('-', ' '),
+    }));
 }

@@ -19,7 +19,7 @@ export class MoreStatesComponent {
   refreshing = signal(false);
   error = signal(false);
   toDos = signal<ToDo[]>([]);
-  errorData = signal<unknown>(null);
+  errorData = signal<Error | null>(null);
 
   constructor() {
     this.loadToDos();

@@ -11,50 +11,50 @@ import { UiStateV1Service } from './ui-state-v1.service';
   standalone: true,
   template: `
     @if (stateSignal(); as state) {
-    <p class="my-4">The current state is: {{ state.state }}</p>
+      <p class="my-4">The current state is: {{ state.state }}</p>
 
-    <!--  -->
-    @if(state.state === 'loading') {
-    <app-spinner />
-    }
-    <!--  -->
-    @if(state.state === 'error') {
-    <app-error [errorDetails]="state.error" (tryAgain)="retry()" />
-    }
-    <!--  -->
-    @if(state.state === 'loaded' || state.state === 'refreshing') {
-    <form [formGroup]="form" class="mb-5 mt-5" (ngSubmit)="updateQuery()">
-      <input
-        type="text"
-        formControlName="query"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-        placeholder="Query"
-        [readOnly]="state.state === 'refreshing'"
-      />
-    </form>
-
-    <div class="relative">
-      <app-to-dos-table [toDos]="state.data" [class.opacity-50]="state.state === 'refreshing'" />
-
-      <div class="flex justify-between mt-4">
-        <div></div>
-        <div class="flex gap-4">
-          <button (click)="previous()" [disabled]="state.request.page === 1">Previous</button>
-          <button (click)="next()">Next</button>
-        </div>
-        <p class="text-gray-500">
-          {{ state.request.limit * (state.request.page - 1) + 1 }} -
-          {{ state.request.limit + state.request.limit * (state.request.page - 1) }} /
-          {{ state.totalItems }}
-        </p>
-      </div>
-
-      @if (state.state === 'refreshing') {
-      <app-spinner class="absolute inset-0" />
+      <!--  -->
+      @if (state.state === 'LOADING') {
+        <app-spinner />
       }
-    </div>
-    }
-    <!--  -->
+      <!--  -->
+      @if (state.state === 'ERROR') {
+        <app-error [errorDetails]="state.error" (tryAgain)="retry()" />
+      }
+      <!--  -->
+      @if (state.state === 'LOADED' || state.state === 'REFRESHING') {
+        <form [formGroup]="form" class="mb-5 mt-5" (ngSubmit)="updateQuery()">
+          <input
+            type="text"
+            formControlName="query"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+            placeholder="Query"
+            [readOnly]="state.state === 'REFRESHING'"
+          />
+        </form>
+
+        <div class="relative">
+          <app-to-dos-table [toDos]="state.data" [class.opacity-50]="state.state === 'REFRESHING'" />
+
+          <div class="flex justify-between mt-4">
+            <div></div>
+            <div class="flex gap-4">
+              <button (click)="previous()" [disabled]="state.request.page === 1">Previous</button>
+              <button (click)="next()">Next</button>
+            </div>
+            <p class="text-gray-500">
+              {{ state.request.limit * (state.request.page - 1) + 1 }} -
+              {{ state.request.limit + state.request.limit * (state.request.page - 1) }} /
+              {{ state.totalItems }}
+            </p>
+          </div>
+
+          @if (state.state === 'REFRESHING') {
+            <app-spinner class="absolute inset-0" />
+          }
+        </div>
+      }
+      <!--  -->
     }
   `,
   styleUrls: ['./ui-state.component.scss'],

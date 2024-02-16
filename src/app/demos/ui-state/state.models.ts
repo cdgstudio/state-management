@@ -1,11 +1,11 @@
 import { ToDo } from '../../api/to-do';
 
 export interface LoadingState {
-  state: 'loading';
+  state: 'LOADING';
 }
 
 export interface LoadedState {
-  state: 'loaded';
+  state: 'LOADED';
   data: ToDo[];
   request: {
     query?: string;
@@ -16,7 +16,7 @@ export interface LoadedState {
 }
 
 export interface RefreshingState {
-  state: 'refreshing';
+  state: 'REFRESHING';
   data: ToDo[];
   request: {
     query?: string;
@@ -27,7 +27,7 @@ export interface RefreshingState {
 }
 
 export interface ErrorState {
-  state: 'error';
+  state: 'ERROR';
   error: unknown;
   fromState: ComponentState;
 }
@@ -36,6 +36,6 @@ export type ComponentState = LoadingState | LoadedState | RefreshingState | Erro
 
 export function getInitialState(): ComponentState {
   return {
-    state: 'loading',
+    state: 'LOADING',
   };
 }
