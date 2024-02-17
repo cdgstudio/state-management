@@ -7,7 +7,7 @@ import { routes } from './app.config';
   standalone: true,
   templateUrl: `./app.component.html`,
   styleUrls: ['./app.component.scss'],
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {

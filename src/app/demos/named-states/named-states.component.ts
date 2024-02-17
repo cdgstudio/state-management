@@ -24,12 +24,12 @@ export class NamedStatesComponent {
   refresh() {
     const state = this.state();
 
-    if (state.state !== 'LOADED') {
+    if (state.name !== 'LOADED') {
       throw new Error('Wrong current state!');
     }
 
     this.state.set({
-      state: 'REFRESHING',
+      name: 'REFRESHING',
       data: state.data,
     });
 
@@ -40,18 +40,18 @@ export class NamedStatesComponent {
     // simulate error
     const state = this.state();
 
-    if (state.state !== 'LOADED') {
+    if (state.name !== 'LOADED') {
       throw new Error('Wrong current state!');
     }
 
     this.state.set({
-      state: 'REFRESHING',
+      name: 'REFRESHING',
       data: state.data,
     });
 
     setTimeout(() => {
       this.state.set({
-        state: 'ERROR',
+        name: 'ERROR',
         error: 'Unkown error!',
       });
     }, 2_500);
@@ -66,13 +66,13 @@ export class NamedStatesComponent {
     this.toDos$.subscribe({
       next: (toDos) => {
         this.state.set({
-          state: 'LOADED',
+          name: 'LOADED',
           data: toDos,
         });
       },
       error: (error) => {
         this.state.set({
-          state: 'ERROR',
+          name: 'ERROR',
           error: error,
         });
       },

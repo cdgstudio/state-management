@@ -1,18 +1,18 @@
 @if (state(); as state) {
-  <h2 class="text-xl text-center my-4 text-white">{{ state.state }} view</h2>
+  <h2 class="text-xl text-center my-4 text-white">{{ state.name }} view</h2>
 
-  @if (state.state === 'LOADING') {
+  @if (state.name === 'LOADING') {
     <app-spinner />
   }
 
-  @if (state.state === 'ERROR') {
+  @if (state.name === 'ERROR') {
     <app-error [errorDetails]="state.error" (tryAgain)="reload()" />
   }
 
-  @if (state.state === 'LOADED' || state.state === 'REFRESHING') {
+  @if (state.name === 'LOADED' || state.name === 'REFRESHING') {
     <div class="relative">
-      <app-to-dos-table [toDos]="state.data" [class.opacity-50]="state.state === 'REFRESHING'" />
-      @if (state.state === 'REFRESHING') {
+      <app-to-dos-table [toDos]="state.data" [class.opacity-50]="state.name === 'REFRESHING'" />
+      @if (state.name === 'REFRESHING') {
         <app-spinner class="absolute inset-0" />
       }
     </div>
